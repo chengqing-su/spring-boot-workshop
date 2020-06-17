@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+cd $(dirname $0)/..
+
+docker volume create --name mysql-data > /dev/null
+
+if [ $(docker ps | grep mysql | wc -l) -eq 0 ]; then
+ docker run -p 3306:3306 \
+   -v mysql-data:/var/lib/mysql \
+   -e MYSQL_ROOT_PASSWORD=123456 \
+   --restart=always \
+   -d \
+   mysql:5.7 \
+   --character-set-server=utf8mb4 \
+   --collation-server=utf8mb4_unicode_ci
+fi

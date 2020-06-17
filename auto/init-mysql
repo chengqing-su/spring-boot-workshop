@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+cd $(dirname $0)/..
+auto/run-mysql
+
+mysql_container_id=$(docker ps | grep -i mysql| awk '{print $1}')
+
+docker cp sql/init.sql ${mysql_container_id}:/init.sql
+docker cp sql/data.sql ${mysql_container_id}:/data.sql
+
+docker exec ${mysql_container_id} sh -c "mysql -u root -p123456 < init.sql"
+docker exec ${mysql_container_id} sh -c "mysql -u root -p123456 dev < data.sql"
+docker exec ${mysql_container_id} sh -c "mysql -u root -p123456 test < data.sql"
